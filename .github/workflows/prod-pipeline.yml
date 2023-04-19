@@ -1,0 +1,47 @@
+name: prod-pipeline
+
+on:
+  push:
+    tags:
+    - 'v*-prod'
+
+env:
+  AWS_DEFAULT_REGION: us-east-2
+  AWS_DEFAULT_OUTPUT: json
+  AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  SSH_PRIVATE_KEY_B64: ${{ secrets.SSH_PRIVATE_KEY_B64 }}
+  CONTAINER_IMAGE: game-api
+  CI: true
+  PROD_DATABASE_HOST: ${{ secrets.PROD_DATABASE_HOST }}
+  PROD_DATABASE_REPLICA: ${{ secrets.PROD_DATABASE_REPLICA }} 
+  PROD_DATABASE_USER: ${{ secrets.PROD_DATABASE_USER }}
+  PROD_DATABASE_PASSWORD: ${{ secrets.PROD_DATABASE_PASSWORD }}
+  PROD_DATABASE_DATABASE: ${{ secrets.PROD_DATABASE_DATABASE }}
+  PROD_IGDB_SECRET: ${{ secrets.PROD_IGDB_SECRET }}
+  PROD_JWT_SECRET: ${{ secrets.PROD_JWT_SECRET }}
+  PROD_TWITCH_CLIENT_ID: ${{ secrets.PROD_TWITCH_CLIENT_ID }}
+  PROD_TWITCH_TOKEN: ${{ secrets.PROD_TWITCH_TOKEN }}
+  PROD_REDIS_HOST: ${{ secrets.REDIS_HOST }} 
+  ELASTIC_APM_SERVER_URL: ${{secrets.ELASTIC_APM_SERVER_URL}}
+  ELASTIC_APM_SECRET_TOKEN: ${{secrets.ELASTIC_APM_SECRET_TOKEN}}
+  SLACK_WEB_TOKEN: ${{secrets.SLACK_WEB_TOKEN}}
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@master
+      with:
+        persist-credentials: false
+    - name: Build and tag the image
+      uses: docker
+      with:
+        context: .
+        file: ./Dockerfile
+        platforms: linux/amd64
+        push: true
+        tags: zedeus/nitter:latest,zedeus/nitter:${{ github.sha }}
