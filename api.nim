@@ -15,7 +15,7 @@ proc printData*():Future[string] {.async.} =
   var node= parseJson(data)
   var cat = to(node, Fact)
   echo getEnv("NODE_ENV"),"enf"
-  echo "$NODE_ENV","env"
+  echo get"$NODE_ENV","env"
   return cat.fact
 
 proc printTwitter*():Future[string] {.async.} =

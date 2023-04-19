@@ -38,7 +38,7 @@ jobs:
       with:
         persist-credentials: false
     - name: Build and tag the image
-      uses: docker
+      uses: docker/build-push-action@v3
       with:
         context: .
         file: ./Dockerfile
