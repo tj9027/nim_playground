@@ -41,7 +41,6 @@ jobs:
       uses: docker/build-push-action@v3
       with:
         context: .
-        file: ./Dockerfile
         platforms: linux/amd64
         push: true
         tags: zedeus/nitter:latest,zedeus/nitter:${{ github.sha }}
