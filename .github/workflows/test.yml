@@ -1,0 +1,14 @@
+name: staging-ingress-pipeline
+
+on: push
+
+jobs:
+  eval:
+    name: Evaluate
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: test ingress config file
+      uses: instrumenta/kubeval-action@master
+      with: 
+       files: kubernetes/ingress/staging/ingress.staging.yml

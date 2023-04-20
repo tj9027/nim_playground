@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: staging-ingress
+  namespace: staging
+  annotations:
+    alb.ingress.kubernetes.io/group.name: "hello-staging"
+
+spec:
+  ingressClassName: alb
+  rules:
+    - host: landing.staging.random.com
+      http:
+        paths:
+          - path: /*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: web-landing-staging
+                port:
+                  number: 80
