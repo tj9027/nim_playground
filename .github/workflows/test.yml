@@ -12,3 +12,6 @@ jobs:
       uses: instrumenta/kubeval-action@master
       with: 
        files: kubernetes/ingress/staging/ingress.staging.yml
+       output: stdout
+       strict: true
+       ignore_missing_schema: false
