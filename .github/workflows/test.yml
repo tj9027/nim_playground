@@ -14,4 +14,4 @@ jobs:
        files: kubernetes/ingress/staging/ingress.staging.yml
        output: stdout
        strict: true
-       ignore_missing_schema: false
+       ignore_missing_schemas: false
