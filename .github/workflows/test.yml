@@ -9,6 +9,6 @@ jobs:
     steps:
     - uses: actions/checkout@master
     - name: test ingress config file
-      uses: instrumenta/kubeval-action@master
+      uses: makocchi-git/actions-k8s-manifests-validate-kubeval@1.0.0
       with: 
        files: kubernetes/ingress/staging/ingress.staging.yml
