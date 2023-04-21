@@ -4,12 +4,52 @@ on: push
 
 jobs:
   validation:
+    name: Validation
     runs-on: ubuntu-latest
     steps:
       - name: login to Github Packages
         run: echo "${{ github.token }}" | docker login https://ghcr.io -u ${GITHUB_ACTOR} --password-stdin
       - uses: actions/checkout@v2
-      - name: kubeconform
       - uses: docker://ghcr.io/yannh/kubeconform:master
         with:
           args: "-summary -output json kubernetes/ingress/staging/ingress.staging.yml"
+  ecr:
+    needs: validation
+    name: ECR
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@master
+      with:
+        persist-credentials: false
+    - name: Setup ECR
+      run: |
+        ls
+        aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+  apply: 
+    needs: ecr
+    name: Apply
+    runs-on: ubuntu-latest
+    steps: 
+    - name: Setup Kubectl
+      run: |
+        aws eks --region $AWS_DEFAULT_REGION update-kubeconfig --name geeiq-prod-eks
+    - name: Release
+      run: |
+        kubectl apply -f kubernetes/ingress/staging/ingress.staging.yml
+  loadbalancer:
+    name: 'Monitor load balancer'
+    needs: apply
+    runs-on: ubuntu-latest
+    steps:
+    - name: 'log'
+      run: |
+        sleep 5; kubectl logs -f --selector=app.kubernetes.io/name=aws-load-balancer-controller -n kube-system
+  dns:
+    name: 'Monitor DNS'
+    needs: apply
+    runs-on: ubuntu-latest
+    steps:
+    - name: 'log'
+      run: |
+        sleep 5; kubectl logs -f $(kubectl get po | egrep -o 'external-dns[A-Za-z0-9-]+')
