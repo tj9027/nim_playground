@@ -11,5 +11,5 @@ jobs:
       - uses: actions/checkout@v2
       - uses: docker://ghcr.io/yannh/kubeconform:master
         with:
-          entrypoint: '/kubeconform'
+          entrypoint: '/kubernetes/ingress/staging/ingress.staging.yml'
           args: "-summary -output json kubeconfigs/"
